@@ -1,0 +1,129 @@
+<div class="container mt-5">
+    <h1 class="mb-4 text-primary">🛒 Tu Carrito</h1>
+
+    {{#if cart.products.length}}
+        <ul class="list-group">
+            {{#each cart.products}}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{this.product.title}}</strong> - ${{this.product.price}}  
+                        <br>
+                        Cantidad: 
+                        <button class="btn btn-sm btn-outline-secondary change-qty" data-action="decrease" data-pid="{{this.product._id}}">➖</button>
+                        <span class="mx-2 quantity">{{this.quantity}}</span>
+                        <button class="btn btn-sm btn-outline-secondary change-qty" data-action="increase" data-pid="{{this.product._id}}">➕</button>
+                    </div>
+                    <button class="btn btn-danger btn-sm delete-product" data-pid="{{this.product._id}}">Eliminar</button>
+                </li>
+            {{/each}}  
+        </ul>
+
+            <div class="mb-4 d-flex gap-3">
+                <button id="clearCartBtn" class="btn btn-warning">🧹 Vaciar carrito</button>
+                <a href="/products" class="btn btn-secondary">⬅️ Volver al catálogo</a>
+                <button id="checkoutBtn" class="btn btn-success">✅ Finalizar compra</button>
+            </div>
+        
+    {{else}}
+        <div class="alert alert-warning mt-3" role="alert">
+            El carrito está vacío.
+        </div> 
+        <a href="/products" class="btn btn-outline-primary mt-4">🔙 Volver a la tienda</a>
+    {{/if}}
+</div>
+
+<script>
+    const cartId = '{{cart._id}}'; 
+
+    // Actualizar cantidad
+    document.querySelectorAll('.change-qty').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const pid = btn.dataset.pid;
+            const action = btn.dataset.action;
+            const qtySpan = btn.parentElement.querySelector('.quantity');
+            let currentQty = parseInt(qtySpan.textContent);
+
+            let newQty = action === 'increase' ? currentQty + 1 : currentQty - 1;
+            if (newQty < 1) return;
+
+            try {
+                const res = await fetch(`/api/carts/${cartId}/products/${pid}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ quantity: newQty })
+                });
+
+                if (res.ok) {
+                    qtySpan.textContent = newQty;
+                } else {
+                    alert('❌ Error al actualizar cantidad');
+                }
+            } catch (err) {
+                alert('❌ Error en la petición');
+            }
+        });
+    });
+
+    // Eliminar producto
+    document.querySelectorAll('.delete-product').forEach(button => {
+        button.addEventListener('click', async () => {
+            const productId = button.dataset.pid;
+
+            const confirmDelete = confirm('¿Querés eliminar este producto del carrito?');
+            if (!confirmDelete) return;
+
+            try {
+                const res = await fetch(`/api/carts/${cartId}/products/${productId}`, {
+                    method: 'DELETE'
+                });
+
+                if (res.ok) {
+                    location.reload();
+                } else {
+                    const err = await res.json();
+                    alert('❌ Error: ' + err.message);
+                }
+            } catch (err) {
+                alert('❌ Error de red al eliminar producto');
+            }
+        });
+    }); 
+
+     // Eliminar todos los productos
+    document.getElementById('clearCartBtn').addEventListener('click', async () => {
+        const confirmClear = confirm('¿Estás seguro que querés vaciar el carrito?');
+
+        if (!confirmClear) return;
+
+        try {
+            const res = await fetch(`/api/carts/${cartId}`, {
+                method: 'DELETE'
+            });
+
+            if (res.ok) {
+                alert('🧹 Carrito vaciado con éxito');
+                location.reload(); 
+            } else {
+                alert('❌ Error al vaciar el carrito');
+            }
+        } catch (err) {
+            alert('❌ Error al hacer la petición');
+        }
+    }); 
+    
+    // Finalizar compra (visual)
+    document.getElementById('checkoutBtn').addEventListener('click', async () => {
+        try {
+            const res = await fetch(`/api/carts/${cartId}`, { method: 'DELETE' });
+            if (res.ok) {
+                alert('Compra finalizada. Gracias por tu pedido!');
+                window.location.href = '/products';  
+            } else {
+                const err = await res.text();
+                alert('❌ Error al finalizar compra: ' + err);
+            }
+        } catch (err) {
+            alert('❌ Error en la petición para finalizar compra');
+        }
+    });
+</script>

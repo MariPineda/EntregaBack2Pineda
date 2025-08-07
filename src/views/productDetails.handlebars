@@ -1,0 +1,50 @@
+<div class="container mt-4">
+    <h1 class="mb-3">{{product.title}}</h1>
+    <p class="lead">{{product.description}}</p>
+    
+    <div class="mb-3">
+        <span class="badge bg-primary fs-5">Precio: ${{product.price}}</span>
+    </div>
+    
+    <div class="mb-4">
+        <span class="badge bg-secondary">Categoría: {{product.category}}</span>
+    </div>
+    
+    <button id="btnAdd" class="btn btn-success mb-3" data-id="{{product._id}}" data-cart="{{cartId}}">
+        <i class="bi bi-cart-plus"></i> Agregar al carrito
+    </button>
+    
+    <a href="/carts/{{cartId}}" class="btn btn-outline-primary ms-2">
+        <i class="bi bi-cart"></i> Ver mi carrito
+    </a> 
+
+    <a href="/products" class="btn btn-outline-secondary ms-2">Volver al catálogo</a>
+</div>
+
+<script>
+document.getElementById('btnAdd').onclick = async () => {
+    const btn = document.getElementById('btnAdd');
+    const productId = btn.dataset.id;
+    const cartId = btn.dataset.cart;
+
+    if (!cartId) return alert('⚠️ Error: No se encontró el cartId.');
+
+    try {
+        const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
+            method: 'POST'
+        });
+
+        if (response.ok) {
+            alert('✅ Producto agregado al carrito');
+        } else {
+            const errorText = await response.text();
+            alert(`❌ Error: ${errorText}`);
+        }
+    } catch (err) {
+        alert(`❌ Error en la petición: ${err.message}`);
+    }
+};
+</script>
+
+
+

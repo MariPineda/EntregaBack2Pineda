@@ -1,0 +1,26 @@
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+        <h2 class="mb-0">👤 Perfil del Usuario</h2>
+        </div>
+        <div class="card-body">
+        <p><strong>Nombre:</strong> {{user.first_name}} {{user.last_name}}</p>
+        <p><strong>Email:</strong> {{user.email}}</p>
+        <p><strong>Edad:</strong> {{user.age}}</p>
+        <p><strong>Rol:</strong> 
+            <span class="badge {{#if (eq user.role 'admin')}}bg-danger{{else}}bg-secondary{{/if}}">
+            {{user.role}}
+            </span>
+        </p>
+        </div>
+        <div class="card-footer text-end">
+        <form id="logoutForm">
+            <button type="submit" class="btn btn-outline-danger">
+            🔓 Cerrar Sesión
+            </button>
+        </form>
+        </div>
+    </div>
+</div>
+
+<script src="/js/logout.js"></script>
