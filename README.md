@@ -16,27 +16,6 @@ Este es un proyecto backend de un sistema E-commerce desarrollado con **Node.js*
 - Handlebars
 - JWT (JSON Web Tokens)
 
----
-
-## 📁 Estructura del proyecto
-/src
-│
-├── config/
-│ └── passport/ # Configuración de Passport
-│
-├── controllers/ # Controladores
-├── middleware/ # Middlewares de auth y roles
-├── models/ # Modelos Mongoose (User, Cart, Product)
-├── public/js/ # Scripts del cliente (login, registro, etc.)
-├── routers/ # Rutas del proyecto
-├── utils/ # Funciones de utilidad (hash)
-├── views/ # Vistas con Handlebars
-│ ├── layouts/
-│ ├── unauthorized.handlebars
-│ ├── ...
-│
-└── server.js # Punto de entrada principal 
-
 ## 🔐 Autenticación y Autorización
 
 El sistema de autenticación se implementa utilizando **Passport.js** con dos estrategias:
